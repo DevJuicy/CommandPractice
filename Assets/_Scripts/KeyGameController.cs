@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
-public class KeyGameController : IGameController
+public class KeyGameController : MonoBehaviour, IGameController
 {
-    public bool FireButtonPressed()
+    public Action FireButtonPressed;
+
+    void Update()
     {
-        return Input.GetKeyDown(KeyCode.Space);
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            FireButtonPressed?.Invoke();
+        }
     }
 }
