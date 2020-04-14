@@ -6,14 +6,14 @@
 
 간단한 키 입력장치를 만들어보자
 
-```c#
+```C#
 public class BulletLauncher : MonoBehaviour
 {
-	void Update()
+    void Update()
 	{
-    	if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) ||)
+        if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) ||)
    	 	{
-     	  	Debug.Log("Fired a bullet!"); 
+            Debug.Log("Fired a bullet!"); 
     	}
 	}
 }
@@ -196,3 +196,232 @@ void Start()
 
 1. 하나의 인터페이스로부터 파생된 다수의 클래스 인스턴스들을 손쉽게 교체할 때
 2. 느슨한 커플링과 유연하고 확장성 있는 프로그래밍 구현하고자 할 때
+
+
+
+## 3. 이벤트를 이용한 IGameController
+
+이벤트를 사용한다는 것은 마치 라디오 방송국에서 전파를 날리는 것과 마찬가지. 라디오 방송국에서 신호를 보낼 대, 누가 그 방송을 듣는지는 고려하지 않음. 그냥 신호를 보낼 뿐
+
+
+
+#### 이벤트 송신
+
+위 예제에서 이벤트는 "총알 발사 버튼이 눌러졌다"와 같은 신호일것이고 이러한 이벤트를 발생시키는 쪽은 MouseGameController나 KeyGameController일것이다.
+
+```C#
+using UnityEngine;
+using System.Collections;
+using System; // 델리게이트를 사용하려면 System이 필요함
+
+public class MouseGameController : IGameController // IGameController의 내부는 잠시 비워놓음
+{
+    public Action FireButtonPressed;
+}
+```
+
+Action은 C#에서 제공하는 델리게이트이다. 
+
+
+
+> 본문에 앞서 델리게이트 강의 (알면 넘어가던가 흥)
+>
+> 1. **delegate**
+>
+>    델리게이트는 함수에 대한 참조 '무엇을 대신한다', '대리한다' 라는 의미를 갖음. 델리게이트에 마치 체인처럼 함수들을 할당해놓고, 특정한 상황에서 해당 델리게이트를 호출함으로써 체인에 연결된 함수들을 동시에 호출 할 수 있음. 다음과 같이 여러 형식의 델리게이트를 만들 수 있다.
+>
+> 	```c#
+> delegate void typeA();
+> delegate void typeB(int);
+> delegate float typeC(float);
+> delegate string typeD(int);
+> 	```
+>
+> 	```C#
+> delegate int Operate(int a, int b);
+> void Start()
+> {
+>     Operate operate;
+>     operate = new Operate((a, b) => a + b);
+>     Debug.Log(operate(3, 2));
+> }
+> 	```
+>
+> 	델리게이트는 콜백메소드로 사용할 수 도있다.
+>
+> 	```c#
+> void Calculate(Operate oper) { }
+>
+>    void Start()
+>    {   
+>        Operate operate;
+>        operate = new Operate((a, b) => a + b);
+>        Calculate(operate);
+>    }
+>    ```
+>    
+> 2. **Func**
+>
+>    반환값이 있는 메소드를 참조하는 델리게이트 변수
+>
+>    ```C#
+>    Func<float> func = ()=> 0.1f;
+>    Func<int,float> func = (a) =>a*0.1f;
+>    ```
+>
+>    <>맨뒷 타입이 반환 타입이다. 반환타입이 있어야 하기 때문에 반드시 <> 사용해야함
+>
+> 3. **Action**
+>
+>    반환값이 없는 메소드를 참조하는 델리게이트 변수
+>
+>    ```C3
+>    Action act = ()=> Debug.Log("hello");
+>    Action<string> act = (name) => Debug.Log(name);
+>    ```
+>
+>    반환값이 없고 <> 안의 타입들은 모두 인자들이다.
+>
+
+
+
+이렇게 코드를 수정하면 마우스왼쪽버튼을 누르면 FireButtonPressed 델리게이트에 엮인 모든 함수들을 **대신** 실행해주게 된다.
+
+```C#
+using UnityEngine;
+using System.Collections;
+using System;
+
+public class MouseGameController : MonoBehaviour, IGameController //Update()를 사용하기위해
+{
+    public Action FireButtonPressed;
+
+    void Update()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            FireButtonPressed();
+        }
+    }
+}
+```
+
+
+
+null체크로 이렇게 할 수 도 있지만
+
+```C#
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (FireButtonPressed != null)
+            {
+                FireButtonPressed();
+            }
+        }
+```
+
+
+
+이렇게도 가능하다.
+
+```C#
+        if (Input.GetMouseButtonDown(0))
+        {
+            FireButtonPressed?.Invoke();
+        }
+```
+
+
+
+#### 이벤트 수신
+
+이벤트를 송신하는 함수는 만들어졌으니, 이제 이벤트를 수신하는 함수를 만들어보자
+
+```C#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BulletLauncher : MonoBehaviour
+{
+    public void OnFireButtonPressed()
+    {
+        Debug.Log("Fired a bullet");
+    }
+}
+```
+
+
+
+#### 송신&수신 함수 연결
+
+이벤트를 연동하는 방법은 두가지이다.
+
+1. 수신자(BulletLauncher)의 내부에서 연결하는것
+2. 수신자의 외부에서 연결하는것
+
+2번의 방법을 사용할것인데 이 방법의 핵심은 MouseGameController나 BulletLauncher가 서로의 존재를 모르지만 커뮤니케이션 할 수 있다는 점이다. 그러기 위해선 중재자 역할의 클래스가 필요함(GameManager.cs)
+
+```c#
+using UnityEngine;
+using System.Collections;
+
+public class GameManager : MonoBehaviour
+{
+    [SerializeField]
+    BulletLauncher launcherPrefab;
+    BulletLauncher launcher;
+
+    void Start()
+    {
+        launcher = Instantiate(launcherPrefab);
+
+        MouseGameController mouseGameController = gameObject.AddComponent<MouseGameController>();
+        // MouseGameController는 MonoBehaviour 를 상속 받기 때문에 더이상 new 는 불가능
+        mouseGameController.FireButtonPressed += launcher.OnFireButtonPressed;
+    }
+}
+```
+
+잘 연결이 되었다.
+
+
+
+다시 BulletLauncher로 돌아와서 보자면
+
+```C#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BulletLauncher : MonoBehaviour
+{
+    public void OnFireButtonPressed()
+    {
+        Debug.Log("Fired a bullet");
+    }
+}
+```
+
+MouseGameController와 관련된 항목들은 존재하지 않음. 어떤 게임 컨트롤러를 사용하는것과 상관없이 BulletLauncher는 그대로이다. 그저 외부에서 OnFireButtonPressed()를 전달시켜주기만 하면 된다.😁
+
+물론 MouseGameController 에도 BulletLauncher와 관계된 것은 하나도 없다.
+
+```C#
+using UnityEngine;
+using System.Collections;
+using System;
+
+public class MouseGameController : MonoBehaviour, IGameController
+{
+    public Action FireButtonPressed;
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            FireButtonPressed?.Invoke();
+        }
+    }
+}
+```
