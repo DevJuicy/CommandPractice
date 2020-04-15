@@ -125,6 +125,10 @@ void Update()
 }
 ```
 
+***
+
+
+
 
 
 ## 2. 디펜던시 인젝션
@@ -196,6 +200,10 @@ void Start()
 
 1. 하나의 인터페이스로부터 파생된 다수의 클래스 인스턴스들을 손쉽게 교체할 때
 2. 느슨한 커플링과 유연하고 확장성 있는 프로그래밍 구현하고자 할 때
+
+
+
+***
 
 
 
@@ -425,3 +433,233 @@ public class MouseGameController : MonoBehaviour, IGameController
     }
 }
 ```
+
+
+
+***
+
+
+
+## 4. Object Pooling
+
+쓸데없는 메모리 낭비를 막기 위해 유니티에서는 총알 같은 오브젝트들에 오브젝트 풀링기법을 이용해 오브젝트를 재사용한다.
+
+
+
+#### 오브젝트 풀링으로 사용할 Factory 만들기
+
+먼저 재사용할 오브젝트들을 추상화한 RecycleObject.cs를 만든다
+
+```c#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RecycleObject : MonoBehaviour
+{
+    
+}
+```
+
+이제 오브젝트 풀링에 사용할 총알같은 스크립트에 RecycleObject를 상속을 받으면 된다
+
+```c#
+public class Bullet : RecycleObject
+```
+
+
+
+재사용오브젝트들을 관리할 Factory
+
+```c#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Factory
+{
+    List<RecycleObject> pool = new List<RecycleObject>();
+    int defaultPoolSize;
+    RecycleObject prefab;
+
+    public Factory(RecycleObject prefab, int defaultPoolSize = 5)
+    {
+        this.prefab = prefab;
+        this.defaultPoolSize = defaultPoolSize;
+
+        Debug.Assert(this.prefab != null, "Prefba is null");
+    }
+}
+```
+
+Factory는 MonoBehaviour를 상속받지 않기 때문에 RecycleObject를 의존하기 위해선 생성자를 이용하여 디펜던시 인젝션을 해주어야한다.
+
+
+
+```c#
+// Factory.cs
+void CreatePool()
+{
+    for(int i =0; i < defaultPoolSize;i++)
+    {
+        RecycleObject obj = GameObject.Instantiate(prefab) as RecycleObject;
+        obj.gameObject.SetActive(false);
+        pool.Add(obj);
+    }
+}
+```
+
+총알(재사용할 오브젝트)를 만들어주고 담는 그릇(List< RecycleObject >) 속에 넣어준다.
+
+
+
+그릇속의 총알을 가져오기 위한 Get()
+
+```c#
+// Factory.cs
+public RecycleObject Get()
+{
+    if(pool.Count ==0)
+    {
+        CreatePool();
+    }
+
+    int lastIndex = pool.Count - 1;
+    RecycleObject obj = pool[lastIndex];
+    pool.RemoveAt(lastIndex);
+    obj.gameObject.SetActive(true);
+    return obj;
+}
+```
+
+lastIndex를 사용하는 이유는 첫Index를 사용해서 꺼내면 List의 모든 오브젝트들이 앞으로 하나 씩 당겨지기 때문에 마지막 인덱스를 사용하는것이 조금이라도 더 효율적
+
+
+
+마지막으로 사용이 완료된 총알을 다시 그릇으로 추가시키는 Restore()
+
+```c#
+public void Restore(RecycleObject obj)
+{
+    Debug.Assert(obj != null, "Null object to be returned!");
+    obj.gameObject.SetActive(false);
+    pool.Add(obj);
+}
+```
+
+
+
+#### 총알 발사로직에 Factory를 추가시켜주기
+
+```c#
+Factory bulletFactory;
+
+void Start()
+{
+    bulletFactory = new Factory(bulletPrefab);
+}
+
+public void OnFireButtonPressed(Vector3 position)
+{
+    Debug.Log("Fired a bullet" + position);
+    bullet = bulletFactory.Get() as Bullet;
+    bullet.Activate(firePosition.position, position);
+}
+```
+
+
+
+#### 총알을 다시 반환하기
+
+1. 총알이 발사 될 때(Activate()) isActivated를 true로 변경시켜주고
+2. 총알이 해당 위치까지 도달했는지 반환하는 IsArrivedToTarget() 함수를 만들었다.
+
+```C#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System;
+
+public class Bullet : RecycleObject
+{
+    [SerializeField]
+    float moveSpeed = 5f;
+
+    Vector3 targetPosition;
+    bool isActivated;
+	
+    // 총알이 파괴시 실행되는 Destoryed
+    // 다시 Factory에 저장하기 위해 Bullet이 Factory를 알거나 BulletLuancher를
+    // 알필요 없이 Bullet은 그냥 Destryed만 제때 실행시켜주면 된다.
+    public Action<Bullet> Destroyed;
+
+    void Update()
+    {
+        if (!isActivated)
+            return;
+
+        transform.position += transform.up * moveSpeed * Time.deltaTime;
+
+        if (IsArrivedToTarget())
+        {
+            isActivated = false;
+            Destroyed?.Invoke(this);
+        }
+    }
+
+    public void Activate(Vector3 startPosition, Vector3 targetPosition)
+    {
+        transform.position = startPosition;
+        this.targetPosition = targetPosition;
+        Vector3 dir = (targetPosition - startPosition).normalized;
+        transform.rotation = Quaternion.LookRotation(transform.forward, dir);
+        isActivated = true;
+    }
+
+    bool IsArrivedToTarget()
+    {
+        float distance = Vector3.Distance(transform.position, targetPosition);
+        return distance < 0.1f;
+    }
+}
+```
+
+
+
+```C#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BulletLauncher : MonoBehaviour
+{
+    [SerializeField]
+    Bullet bulletPrefab;
+
+    [SerializeField]
+    Transform firePosition;
+
+    Factory bulletFactory;
+
+    void Start()
+    {
+        bulletFactory = new Factory(bulletPrefab);
+    }
+
+    public void OnFireButtonPressed(Vector3 position)
+    {
+        Debug.Log("Fired a bullet" + position);
+        Bullet bullet = bulletFactory.Get() as Bullet;
+        bullet.Activate(firePosition.position, position);
+   		// 총알파괴 할 때 Factory에 다시 저장을 해줘야 하기 때문에 연결시켜준다
+        bullet.Destroyed += OnBulletDestroyed;
+    }
+
+    void OnBulletDestroyed(Bullet usedBullet)
+    {
+        usedBullet.Destroyed -= OnBulletDestroyed;
+        bulletFactory.Restore(usedBullet);
+    }
+}
+```
+
