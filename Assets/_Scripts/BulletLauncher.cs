@@ -8,6 +8,9 @@ public class BulletLauncher : MonoBehaviour
     Bullet bulletPrefab;
 
     [SerializeField]
+    Explosion explosionPrefab;
+
+    [SerializeField]
     Transform firePosition;
 
     [SerializeField]
@@ -16,10 +19,12 @@ public class BulletLauncher : MonoBehaviour
     bool canShoot = true;
 
     Factory bulletFactory;
+    Factory explosionFactory;
 
     void Start()
     {
         bulletFactory = new Factory(bulletPrefab);
+        explosionFactory = new Factory(explosionPrefab);
     }
 
     void Update()
@@ -49,7 +54,18 @@ public class BulletLauncher : MonoBehaviour
 
     void OnBulletDestroyed(Bullet usedBullet)
     {
+        Vector3 lastBulletPosition = usedBullet.transform.position;
         usedBullet.Destroyed -= OnBulletDestroyed;
         bulletFactory.Restore(usedBullet);
+
+        Explosion explosion = explosionFactory.Get() as Explosion;
+        explosion.Activate(lastBulletPosition);
+        explosion.Destroyed += OnExplosionDestroyed;
+    }
+
+    void OnExplosionDestroyed(Explosion usedExplosion)
+    {
+        usedExplosion.Destroyed -= OnExplosionDestroyed;
+        explosionFactory.Restore(usedExplosion);
     }
 }
