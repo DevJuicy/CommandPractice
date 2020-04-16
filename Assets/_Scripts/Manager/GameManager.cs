@@ -28,10 +28,17 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     float missileSpawnInterval = 0.5f;
 
+    [SerializeField]
+    int scorePerMissile = 50;
+
+    [SerializeField]
+    int scorePerBuilding = 5000; 
+
     MouseGameController mouseGameController;
     BuildingManager buildingManager;
     TimeManager timeManager;
     MissileManager missileManager;
+    ScoreManager scoreManager;
 
     void Start()
     {
@@ -44,6 +51,9 @@ public class GameManager : MonoBehaviour
         timeManager = gameObject.AddComponent<TimeManager>();
         missileManager = gameObject.AddComponent<MissileManager>();
         missileManager.Initialize(new Factory(missilePrefab), buildingManager, maxMissileCount, missileSpawnInterval);
+
+        scoreManager = new ScoreManager(scorePerMissile, scorePerBuilding);
+
         BindEvents();
         timeManager.StartGame(1f);
     }
@@ -59,6 +69,7 @@ public class GameManager : MonoBehaviour
         timeManager.GameStarted += buildingManager.OnGameStarted;
         timeManager.GameStarted += launcher.OnGameStarted;
         timeManager.GameStarted += missileManager.OnGameStarted;
+        missileManager.missileDestroyed += scoreManager.OnMissileDestroyed;
     }
 
     void UnBindEvents()
@@ -67,5 +78,6 @@ public class GameManager : MonoBehaviour
         timeManager.GameStarted -= buildingManager.OnGameStarted;
         timeManager.GameStarted -= launcher.OnGameStarted;
         timeManager.GameStarted -= missileManager.OnGameStarted;
+        missileManager.missileDestroyed -= scoreManager.OnMissileDestroyed;
     }
 }

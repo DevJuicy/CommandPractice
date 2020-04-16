@@ -160,6 +160,12 @@ MonoBehaviour:
   - {fileID: 334614350}
   - {fileID: 1998805531}
   - {fileID: 1657026287}
+  missilePrefab: {fileID: 4760373766421203691, guid: 0c08955d5c43f924cbb34a0c56fe4872,
+    type: 3}
+  effectPrefab: {fileID: 8561029218793293738, guid: 09ea04422890a2c44b33efa2d456f15c,
+    type: 3}
+  maxMissileCount: 20
+  missileSpawnInterval: 0.5
 --- !u!4 &179281436
 Transform:
   m_ObjectHideFlags: 0

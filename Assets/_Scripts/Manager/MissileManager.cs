@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class MissileManager : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class MissileManager : MonoBehaviour
     float missileSpawnInterval = 0.5f;
 
     Coroutine spawningMissile;
+
+    List<RecycleObject> missiles = new List<RecycleObject>();
+
+    public Action missileDestroyed;
 
     bool isInitialize = false;
 
@@ -40,13 +45,14 @@ public class MissileManager : MonoBehaviour
         RecycleObject missile = missileFactory.Get();
         missile.Activate(GetMissileSpawnPosition(), buildingManager.GetRandomBuildingPosition());
         missile.Destroyed += OnMissileDestroyed;
+        missiles.Add(missile);
         currentMissileCount++;
     }
 
     Vector3 GetMissileSpawnPosition()
     {
         Vector3 spawnPostion = Vector3.zero;
-        spawnPostion.x = Random.Range(0f, 1f);
+        spawnPostion.x = UnityEngine.Random.Range(0f, 1f);
         spawnPostion.y = 1f;
 
         spawnPostion = Camera.main.ViewportToWorldPoint(spawnPostion);
@@ -57,7 +63,11 @@ public class MissileManager : MonoBehaviour
     void OnMissileDestroyed(RecycleObject missile)
     {
         missile.Destroyed -= OnMissileDestroyed;
+        int index = missiles.IndexOf(missile);
+        missiles.RemoveAt(index);
         missileFactory.Restore(missile);
+
+        missileDestroyed?.Invoke();
     }
 
     IEnumerator CAutoSpawnMissile()
