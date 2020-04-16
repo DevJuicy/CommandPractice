@@ -663,3 +663,28 @@ public class BulletLauncher : MonoBehaviour
 }
 ```
 
+
+
+## 5. MonoBehaviour? 
+
+프로젝트의 TimeManager.cs와 BuildingManager.cs 를 볼 수 있는데 TimeManager은 MonoBehaviour의 상속을 받고 BuildingManager은 받지 않는 것을 볼 수 있다. 왜 일까?
+
+
+
+#### MonoBehaviour의 기능
+
+유니티 도큐먼트의 MonoBehaviour을 참조해보면 ( https://docs.unity3d.com/kr/530/ScriptReference/MonoBehaviour.html ) 평소에 굉장히 많이 쓰는 함수들이 보인다.
+
+> StartCoroutine, Awake, Update, Start, OnTriggerEnter 등등
+
+또 MonoBehaviour을 상속 받은 오브젝트만 Unity Inspector 컴포넌트로써 사용할 수 있고, 대신 new 를 이용해서 생성할 수 없다.
+
+하지만 기능이 많다는건 당연히 그만큼 무게가 나간다는 의미이기도 하다.
+
+
+
+#### 결론
+
+당연히 코딩에 정답은 없지만🙆‍♂️
+
+클래스에서 유니티 내장함수를 사용하고자 한다면  MonoBehaviour을 상속받고 GetComponent나 AddComponent를 이용하여 인스턴스를 이용하고, 좀 더 일반적인 C# 프로그래밍을 하는 경우에는 보통의 C# 클래스를 만들고 new 키워드를 이용해서 인스턴스를 만드는것이 좋은 방법일듯 싶다.
