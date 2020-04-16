@@ -29,10 +29,10 @@ public class BulletLauncher : MonoBehaviour
 
     void Update()
     {
-        if(!canShoot)
+        if (!canShoot)
         {
             elapsedFireTime += Time.deltaTime;
-            if(elapsedFireTime >= fireDelay)
+            if (elapsedFireTime >= fireDelay)
             {
                 canShoot = true;
                 elapsedFireTime = 0f;
@@ -44,26 +44,26 @@ public class BulletLauncher : MonoBehaviour
     {
         if (!canShoot)
             return;
-        ;
-        Bullet bullet = bulletFactory.Get() as Bullet;
+
+        RecycleObject bullet = bulletFactory.Get();
         bullet.Activate(firePosition.position, position);
         bullet.Destroyed += OnBulletDestroyed;
 
         canShoot = false;
     }
 
-    void OnBulletDestroyed(Bullet usedBullet)
+    void OnBulletDestroyed(RecycleObject usedBullet)
     {
         Vector3 lastBulletPosition = usedBullet.transform.position;
         usedBullet.Destroyed -= OnBulletDestroyed;
         bulletFactory.Restore(usedBullet);
 
-        Explosion explosion = explosionFactory.Get() as Explosion;
+        RecycleObject explosion = explosionFactory.Get();
         explosion.Activate(lastBulletPosition);
         explosion.Destroyed += OnExplosionDestroyed;
     }
 
-    void OnExplosionDestroyed(Explosion usedExplosion)
+    void OnExplosionDestroyed(RecycleObject usedExplosion)
     {
         usedExplosion.Destroyed -= OnExplosionDestroyed;
         explosionFactory.Restore(usedExplosion);

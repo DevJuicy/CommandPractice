@@ -12,9 +12,6 @@ public class Explosion : RecycleObject
     [SerializeField]
     float timeToRemove = 1f;
     float elapsedTime = 0f;
-    bool isActivated;
-
-    public Action<Explosion> Destroyed;
 
     void Awake()
     {
@@ -36,12 +33,6 @@ public class Explosion : RecycleObject
                 DestroySelf();
             }
         }
-    }
-
-    public void Activate(Vector3 position)
-    {
-        isActivated = true;
-        transform.position = position;
     }
 
     void DestroySelf()

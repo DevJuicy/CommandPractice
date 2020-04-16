@@ -8,11 +8,6 @@ public class Bullet : RecycleObject
     [SerializeField]
     float moveSpeed = 5f;
 
-    Vector3 targetPosition;
-    bool isActivated;
-
-    public Action<Bullet> Destroyed;
-
     void Update()
     {
         if (!isActivated)
@@ -27,14 +22,6 @@ public class Bullet : RecycleObject
         }
     }
 
-    public void Activate(Vector3 startPosition, Vector3 targetPosition)
-    {
-        transform.position = startPosition;
-        this.targetPosition = targetPosition;
-        Vector3 dir = (targetPosition - startPosition).normalized;
-        transform.rotation = Quaternion.LookRotation(transform.forward, dir);
-        isActivated = true;
-    }
 
     bool IsArrivedToTarget()
     {
