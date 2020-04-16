@@ -16,17 +16,39 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     Transform[] buildingLocators;
 
+    MouseGameController mouseGameController;
     BuildingManager buildingManager;
+    TimeManager timeManager;
 
     void Start()
     {
         launcher = Instantiate(launcherPrefab);
         launcher.transform.position = launcherLocator.position;
 
-        MouseGameController mouseGameController = gameObject.AddComponent<MouseGameController>();
-        // MouseGameController는 MonoBehaviour 를 상속 받기 때문에 더이상 new 는 불가능
-        mouseGameController.FireButtonPressed += launcher.OnFireButtonPressed;
+         mouseGameController = gameObject.AddComponent<MouseGameController>();
 
         buildingManager = new BuildingManager(buildingPrefab, buildingLocators);
+        timeManager = gameObject.AddComponent<TimeManager>();
+        BindEvents();
+        timeManager.StartGame(1f);
+    }
+
+    void OnDestroy()
+    {
+        UnBindEvents();
+    }
+
+    void BindEvents()
+    {
+        mouseGameController.FireButtonPressed += launcher.OnFireButtonPressed;
+        timeManager.GameStarted += buildingManager.OnGameStarted;
+        timeManager.GameStarted += launcher.OnGameStarted;
+    }
+
+    void UnBindEvents()
+    {
+        mouseGameController.FireButtonPressed -= launcher.OnFireButtonPressed;
+        timeManager.GameStarted -= buildingManager.OnGameStarted;
+        timeManager.GameStarted -= launcher.OnGameStarted;
     }
 }

@@ -15,7 +15,10 @@ public class BuildingManager
 
         Debug.Assert(this.prefab != null, "null building prefab");
         Debug.Assert(this.buildingLocators != null, "null buildingLocators");
+    }
 
+    public void OnGameStarted()
+    {
         CreateBuildings();
     }
 

@@ -18,6 +18,8 @@ public class BulletLauncher : MonoBehaviour
     float elapsedFireTime;
     bool canShoot = true;
 
+    bool isGameStarted;
+
     Factory bulletFactory;
     Factory explosionFactory;
 
@@ -29,6 +31,9 @@ public class BulletLauncher : MonoBehaviour
 
     void Update()
     {
+        if (!isGameStarted)
+            return;
+
         if (!canShoot)
         {
             elapsedFireTime += Time.deltaTime;
@@ -67,5 +72,10 @@ public class BulletLauncher : MonoBehaviour
     {
         usedExplosion.Destroyed -= OnExplosionDestroyed;
         explosionFactory.Restore(usedExplosion);
+    }
+
+    public void OnGameStarted()
+    {
+        isGameStarted = true;
     }
 }
