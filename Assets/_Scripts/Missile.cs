@@ -34,6 +34,13 @@ public class Missile : RecycleObject
         if(collision.GetComponent<Building>()!=null)
         {
             DestroySelf();
+            return;
+        }
+
+        if(collision.GetComponent<Explosion>()!=null)
+        {
+            DestroySelf();
+            return;
         }
     }
 
