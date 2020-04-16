@@ -5,21 +5,34 @@ public class BuildingManager
 {
     Building prefab;
     Transform[] buildingLocators;
+    Factory effectFactory;
 
     List<Building> buildings = new List<Building>();
 
-    public BuildingManager(Building prefab, Transform[] buildingLocators)
+    public BuildingManager(Building prefab, Transform[] buildingLocators, Factory effectFactory)
     {
         this.prefab = prefab;
         this.buildingLocators = buildingLocators;
-
-        Debug.Assert(this.prefab != null, "null building prefab");
-        Debug.Assert(this.buildingLocators != null, "null buildingLocators");
+        this.effectFactory = effectFactory;
     }
 
     public void OnGameStarted()
     {
         CreateBuildings();
+    }
+
+    public Vector3 GetRandomBuildingPosition()
+    {
+        Building building = buildings[Random.Range(0, buildings.Count)];
+        return building.transform.position;
+    }
+
+    public bool HasBuilding
+    {
+        get
+        {
+            return buildings.Count > 0;
+        }
     }
 
     void CreateBuildings()
@@ -34,7 +47,26 @@ public class BuildingManager
         {
             Building building = GameObject.Instantiate(prefab);
             building.transform.position = buildingLocators[i].position;
+            building.Destroyed += OnBuildingDestryed;
             buildings.Add(building);
         }
+    }
+
+    void OnBuildingDestryed(Building building)
+    {
+        RecycleObject effect = effectFactory.Get();
+        effect.Activate(building.transform.position);
+        effect.Destroyed += OnEffectDestroyed;
+
+        building.Destroyed -= OnBuildingDestryed;
+        int index = buildings.IndexOf(building);
+        buildings.RemoveAt(index);
+        GameObject.Destroy(building.gameObject);
+    }
+
+    void OnEffectDestroyed(RecycleObject effect)
+    {
+        effect.Destroyed -= OnEffectDestroyed;
+        effectFactory.Restore(effect);
     }
 }
