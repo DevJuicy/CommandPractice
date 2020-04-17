@@ -64,6 +64,8 @@ public class BuildingManager
 
     void OnBuildingDestryed(Building building)
     {
+        AudioManager.instance.PlaySound(SoundID.BuildingExplosion);
+
         RecycleObject effect = effectFactory.Get();
         effect.Activate(building.transform.position);
         effect.Destroyed += OnEffectDestroyed;

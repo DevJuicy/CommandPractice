@@ -54,6 +54,8 @@ public class BulletLauncher : MonoBehaviour
         bullet.Activate(firePosition.position, position);
         bullet.Destroyed += OnBulletDestroyed;
 
+        AudioManager.instance.PlaySound(SoundID.Shoot);
+
         canShoot = false;
     }
 
@@ -66,6 +68,8 @@ public class BulletLauncher : MonoBehaviour
         RecycleObject explosion = explosionFactory.Get();
         explosion.Activate(lastBulletPosition);
         explosion.Destroyed += OnExplosionDestroyed;
+
+        AudioManager.instance.PlaySound(SoundID.BulletExplosion);
     }
 
     void OnExplosionDestroyed(RecycleObject usedExplosion)
