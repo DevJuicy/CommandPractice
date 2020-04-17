@@ -18,6 +18,7 @@ public class MissileManager : MonoBehaviour
     List<RecycleObject> missiles = new List<RecycleObject>();
 
     public Action missileDestroyed;
+    public Action AllMissilesDestroyed;
 
     bool isInitialize = false;
 
@@ -79,6 +80,16 @@ public class MissileManager : MonoBehaviour
         int index = missiles.IndexOf(missile);
         missiles.RemoveAt(index);
         missileFactory.Restore(missile);
+
+        CheckAllMissileResotred();
+    }
+
+    void CheckAllMissileResotred()
+    {
+        if(currentMissileCount == maxMissileCount && missiles.Count ==0)
+        {
+            AllMissilesDestroyed?.Invoke();
+        }
     }
 
     IEnumerator CAutoSpawnMissile()

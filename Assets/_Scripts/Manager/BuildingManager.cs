@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class BuildingManager
 {
     Building prefab;
@@ -8,6 +8,16 @@ public class BuildingManager
     Factory effectFactory;
 
     List<Building> buildings = new List<Building>();
+
+    public Action AllBuildingsDestroyed;
+
+    public bool HasBuilding
+    {
+        get
+        {
+            return buildings.Count > 0;
+        }
+    }
 
     public BuildingManager(Building prefab, Transform[] buildingLocators, Factory effectFactory)
     {
@@ -23,16 +33,8 @@ public class BuildingManager
 
     public Vector3 GetRandomBuildingPosition()
     {
-        Building building = buildings[Random.Range(0, buildings.Count)];
+        Building building = buildings[UnityEngine.Random.Range(0, buildings.Count)];
         return building.transform.position;
-    }
-
-    public bool HasBuilding
-    {
-        get
-        {
-            return buildings.Count > 0;
-        }
     }
 
     void CreateBuildings()
@@ -62,6 +64,11 @@ public class BuildingManager
         int index = buildings.IndexOf(building);
         buildings.RemoveAt(index);
         GameObject.Destroy(building.gameObject);
+
+        if(buildings.Count == 0)
+        {
+            AllBuildingsDestroyed?.Invoke();
+        }
     }
 
     void OnEffectDestroyed(RecycleObject effect)

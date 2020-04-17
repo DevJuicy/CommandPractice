@@ -37,6 +37,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     UIRoot uIRoot;
 
+    bool isAllBuildingDestroyed;
+
     MouseGameController mouseGameController;
     BuildingManager buildingManager;
     TimeManager timeManager;
@@ -66,6 +68,12 @@ public class GameManager : MonoBehaviour
         UnBindEvents();
     }
 
+    void OnAllBuildingDestroyed()
+    {
+        // END
+        isAllBuildingDestroyed = true;
+    }
+
     void BindEvents()
     {
         mouseGameController.FireButtonPressed += launcher.OnFireButtonPressed;
@@ -74,7 +82,9 @@ public class GameManager : MonoBehaviour
         timeManager.GameStarted += missileManager.OnGameStarted;
         timeManager.GameStarted += uIRoot.OnGameStarted;
         missileManager.missileDestroyed += scoreManager.OnMissileDestroyed;
+        missileManager.AllMissilesDestroyed += OnAllBuildingDestroyed;
         scoreManager.ScoreChanged += uIRoot.OnScoreChanged;
+        buildingManager.AllBuildingsDestroyed += OnAllBuildingDestroyed;
     }
 
     void UnBindEvents()
@@ -85,6 +95,18 @@ public class GameManager : MonoBehaviour
         timeManager.GameStarted -= missileManager.OnGameStarted;
         timeManager.GameStarted -= uIRoot.OnGameStarted;
         missileManager.missileDestroyed -= scoreManager.OnMissileDestroyed;
+        missileManager.AllMissilesDestroyed -= OnAllBuildingDestroyed;
         scoreManager.ScoreChanged += uIRoot.OnScoreChanged;
+        buildingManager.AllBuildingsDestroyed -= OnAllBuildingDestroyed;
+    }
+
+    IEnumerator CDelayedGameEnded()
+    {
+        yield return null;
+
+        if(!isAllBuildingDestroyed)
+        {
+            // WIN
+        }
     }
 }
