@@ -45,6 +45,7 @@ public class MissileManager : MonoBehaviour
         RecycleObject missile = missileFactory.Get();
         missile.Activate(GetMissileSpawnPosition(), buildingManager.GetRandomBuildingPosition());
         missile.Destroyed += OnMissileDestroyed;
+        missile.OutOfScreen += OnMissileOutOfScreen;
         missiles.Add(missile);
         currentMissileCount++;
     }
@@ -62,12 +63,22 @@ public class MissileManager : MonoBehaviour
 
     void OnMissileDestroyed(RecycleObject missile)
     {
+        RestoreMissile(missile);
+        missileDestroyed?.Invoke();
+    }
+
+    void OnMissileOutOfScreen(RecycleObject missile)
+    {
+        RestoreMissile(missile);
+    }
+
+    void RestoreMissile(RecycleObject missile)
+    {
         missile.Destroyed -= OnMissileDestroyed;
+        missile.OutOfScreen -= this.OnMissileOutOfScreen;
         int index = missiles.IndexOf(missile);
         missiles.RemoveAt(index);
         missileFactory.Restore(missile);
-
-        missileDestroyed?.Invoke();
     }
 
     IEnumerator CAutoSpawnMissile()

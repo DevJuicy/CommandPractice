@@ -3,11 +3,11 @@ using System;
 
 public class RecycleObject : MonoBehaviour
 {
+    public Action<RecycleObject> Destroyed;
+    public Action<RecycleObject> OutOfScreen;
+
     protected bool isActivated;
     protected Vector3 targetPosition;
-
-    public Action<RecycleObject> Destroyed;
-
     public virtual void Activate(Vector3 position)
     {
         isActivated = true;
