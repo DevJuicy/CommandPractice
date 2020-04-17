@@ -11,6 +11,14 @@ public class BuildingManager
 
     public Action AllBuildingsDestroyed;
 
+    public int BuildingCount
+    {
+        get
+        {
+            return buildings.Count;
+        }
+    }
+
     public bool HasBuilding
     {
         get

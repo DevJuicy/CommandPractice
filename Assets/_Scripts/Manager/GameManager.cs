@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System;
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
 
     bool isAllBuildingDestroyed;
 
+    public Action<bool, int> GameEnded;
+
     MouseGameController mouseGameController;
     BuildingManager buildingManager;
     TimeManager timeManager;
@@ -72,6 +74,7 @@ public class GameManager : MonoBehaviour
     {
         // END
         isAllBuildingDestroyed = true;
+        GameEnded?.Invoke(false, buildingManager.BuildingCount);
     }
 
     void BindEvents()
