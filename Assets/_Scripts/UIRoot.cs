@@ -17,4 +17,9 @@ public class UIRoot : MonoBehaviour
         scoreUI.gameObject.SetActive(true);
         scoreUI.text = string.Format("Score: {0}", 0);
     }
+
+    public void OnScoreChanged(int score)
+    {
+        scoreUI.text = string.Format("Score: {0}", score);
+    }
 }

@@ -74,6 +74,7 @@ public class GameManager : MonoBehaviour
         timeManager.GameStarted += missileManager.OnGameStarted;
         timeManager.GameStarted += uIRoot.OnGameStarted;
         missileManager.missileDestroyed += scoreManager.OnMissileDestroyed;
+        scoreManager.ScoreChanged += uIRoot.OnScoreChanged;
     }
 
     void UnBindEvents()
@@ -84,5 +85,6 @@ public class GameManager : MonoBehaviour
         timeManager.GameStarted -= missileManager.OnGameStarted;
         timeManager.GameStarted -= uIRoot.OnGameStarted;
         missileManager.missileDestroyed -= scoreManager.OnMissileDestroyed;
+        scoreManager.ScoreChanged += uIRoot.OnScoreChanged;
     }
 }
