@@ -32,7 +32,10 @@ public class GameManager : MonoBehaviour
     int scorePerMissile = 50;
 
     [SerializeField]
-    int scorePerBuilding = 5000; 
+    int scorePerBuilding = 5000;
+
+    [SerializeField]
+    UIRoot uIRoot;
 
     MouseGameController mouseGameController;
     BuildingManager buildingManager;
@@ -69,6 +72,7 @@ public class GameManager : MonoBehaviour
         timeManager.GameStarted += buildingManager.OnGameStarted;
         timeManager.GameStarted += launcher.OnGameStarted;
         timeManager.GameStarted += missileManager.OnGameStarted;
+        timeManager.GameStarted += uIRoot.OnGameStarted;
         missileManager.missileDestroyed += scoreManager.OnMissileDestroyed;
     }
 
@@ -78,6 +82,7 @@ public class GameManager : MonoBehaviour
         timeManager.GameStarted -= buildingManager.OnGameStarted;
         timeManager.GameStarted -= launcher.OnGameStarted;
         timeManager.GameStarted -= missileManager.OnGameStarted;
+        timeManager.GameStarted -= uIRoot.OnGameStarted;
         missileManager.missileDestroyed -= scoreManager.OnMissileDestroyed;
     }
 }
