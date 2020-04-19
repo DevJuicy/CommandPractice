@@ -688,3 +688,120 @@ public class BulletLauncher : MonoBehaviour
 당연히 코딩에 정답은 없지만🙆‍♂️
 
 클래스에서 유니티 내장함수를 사용하고자 한다면  MonoBehaviour을 상속받고 GetComponent나 AddComponent를 이용하여 인스턴스를 이용하고, 좀 더 일반적인 C# 프로그래밍을 하는 경우에는 보통의 C# 클래스를 만들고 new 키워드를 이용해서 인스턴스를 만드는것이 좋은 방법일듯 싶다.
+
+
+
+## 6. AudioManager 
+
+Dictionary에 ID에 매칭되는 음향을 넣기 위해 enum타입으로 선언된 SoundID
+
+```c#
+public enum SoundID
+{
+    Shoot, BulletExplosion, BuildingExplosion, GameEnd
+}
+```
+
+
+
+```c#
+[CreateAssetMenu]
+public class AudioStorage : ScriptableObject
+{
+    [SerializeField]
+    SoundSrc[] soundSrcs;
+
+    Dictionary<SoundID, AudioClip> dicSounds = new Dictionary<SoundID, AudioClip>();
+
+    void GenerateDictionary()
+    {
+        for(int i = 0; i<soundSrcs.Length;i++)
+        {
+            dicSounds.Add(soundSrcs[i].ID, soundSrcs[i].SoundFile);
+        }
+    }
+
+    public AudioClip Get(SoundID ID)
+    {
+        if(dicSounds.Count == 0)
+        {
+            GenerateDictionary();
+        }
+        return dicSounds[ID];
+    }
+}
+```
+
+AudioStorage에는 다양한 효과음들을 넣은 ScriptableObject이다.
+
+이 AudioStorage는 SerailizeField로 SoundSrc를 담고있고 SoundSrc는 Dictionary에서 사용할 SoundID와 실제 음향인 AudioClip이 담겨있다
+
+
+
+```c#
+[Serializable]
+public struct SoundSrc
+{
+    [SerializeField]
+    AudioClip soundFile;
+    public AudioClip SoundFile
+    {
+        get
+        {
+            return soundFile;
+        }
+    }
+
+    [SerializeField]
+    SoundID soundID;
+    public SoundID ID
+    {
+        get
+        {
+            return soundID;
+        }
+    }
+}
+```
+
+SoundSrc를 Serializable하게 만드는 이유는 ScriptableObject의 값은 Serializable 해야 Inspector에서 사용하고, 또 저장이 가능하기 때문이다.
+
+
+
+다른곳에서 사용하려면 먼저 싱글톤으로 선언된 AudioManager가 필요하다.
+
+```c#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class AudioManager : MonoBehaviour
+{
+    public static AudioManager instance;
+
+    [SerializeField]
+    AudioStorage soundStorage;
+
+    void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(this);
+    }
+
+    public void PlaySound(SoundID ID)
+    {
+        AudioSource.PlayClipAtPoint(soundStorage.Get(ID), Vector3.zero);
+    }
+}
+```
+
+그리고 소리가 나야할 부분에
+
+```C#
+AudioManager.instance.PlaySound(SoundID.BuildingExplosion);
+```
+
+이 코드를 추가시켜주면 정상적으로 작동되는것을 볼 수 있다.
+
