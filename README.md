@@ -663,6 +663,8 @@ public class BulletLauncher : MonoBehaviour
 }
 ```
 
+***
+
 
 
 ## 5. MonoBehaviour? 
@@ -805,3 +807,16 @@ AudioManager.instance.PlaySound(SoundID.BuildingExplosion);
 
 이 코드를 추가시켜주면 정상적으로 작동되는것을 볼 수 있다.
 
+
+
+***
+
+## 마치며
+
+마지막 AudioManager를 제외하면 다른 Manager들은 Singleton패턴을 사용하지않았다는게 신기하다.
+
+C# 델리게이트 액션을 기존에도 사용을 할 줄은 알았지만 제대로 사용하지 못하고 있었던걸 느꼈다.
+
+단일책임의원칙은 어찌보면 객체지향적으로 코딩하는 방법중 기본중의 기본이라 할 수 있는데 지금까지 책임을 다른곳에 잘 못 전가하고 있었던것 같기도하다. 예를들면 Building이 폭파될 때 굳이 소리나 다른 이벤트들을 알고 있을 필요가 없다. 그냥 Destoyed 액션만 실행시켜주면 Manager가 거기에 연관된 이벤트들을 실행시켜줄 뿐이다.
+
+특히 Factory 클래스를 이용한 ObjectPool 기법이 좋았던것 같다.
