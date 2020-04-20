@@ -10,10 +10,29 @@ namespace JUICY
         MissileLauncher missileLauncherPrefab;
         MissileLauncher missileLauncher;
 
+        MouseController mouseController;
+
+
         void Start()
         {
             missileLauncher = Instantiate(missileLauncherPrefab);
-            missileLauncher.SetGameController(new MouseController());
+            mouseController = gameObject.AddComponent<MouseController>();
+            BindEvents();
+        }
+
+        void OnDestroy()
+        {
+            UnBindEvents();
+        }
+
+        void BindEvents()
+        {
+            mouseController.KeyPressed += missileLauncher.Shoot;
+        }
+
+        void UnBindEvents()
+        {
+            mouseController.KeyPressed -= missileLauncher.Shoot;
         }
     }
 }

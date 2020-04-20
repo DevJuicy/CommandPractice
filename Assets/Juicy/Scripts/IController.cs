@@ -2,6 +2,6 @@
 {
     public interface IController
     {
-        bool PressAttackKey();
+        //bool PressAttackKey();
     }
 }

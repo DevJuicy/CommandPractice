@@ -1,14 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
-//using System;
+using System;
 
 namespace JUICY
 {
-    public class MouseController : IController
+    public class MouseController : MonoBehaviour, IController
     {
-        public bool PressAttackKey()
+        public Action<Vector3> KeyPressed;
+        void Update()
         {
-            return Input.GetMouseButtonDown(0);
+            if(Input.GetMouseButtonDown(0))
+            {
+                KeyPressed?.Invoke(GetInputPosition(Input.mousePosition));
+            }
+        }
+
+        Vector3 GetInputPosition(Vector3 mousePosition)
+        {
+            Vector3 point = Camera.main.ScreenToWorldPoint(mousePosition);
+            point.z = 0;
+            return point;
         }
     }
 }
