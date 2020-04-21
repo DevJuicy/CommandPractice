@@ -123,3 +123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1e3d60ac518cb4aab85d3c9df6d7f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fireDelay: 0.5
+  missilePrefab: {fileID: 6594711831054778514, guid: 9f3c3c1a767699e49a3f1826434427dc,
+    type: 3}
