@@ -10,7 +10,7 @@ namespace JUICY
         RecycleObject prefab;
         int defaultPoolSize;
 
-        public Factory(RecycleObject prefab, int defaultPoolSize)
+        public Factory(RecycleObject prefab, int defaultPoolSize = 5)
         {
             this.prefab = prefab;
             this.defaultPoolSize = defaultPoolSize;
