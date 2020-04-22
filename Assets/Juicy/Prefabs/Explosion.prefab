@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5835168272044922805
+--- !u!1 &5281146922413818931
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,36 +8,36 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5191801448020282083}
-  - component: {fileID: 6346047270719944534}
+  - component: {fileID: 9119584471938723091}
+  - component: {fileID: 8068867077631729675}
   m_Layer: 0
-  m_Name: MissileLauncher_0
+  m_Name: Explosion_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5191801448020282083
+--- !u!4 &9119584471938723091
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5835168272044922805}
+  m_GameObject: {fileID: 5281146922413818931}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 5210759584641842374}
+  m_Father: {fileID: 4196563020628238368}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &6346047270719944534
+--- !u!212 &8068867077631729675
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5835168272044922805}
+  m_GameObject: {fileID: 5281146922413818931}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -68,18 +68,18 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ed1836f8ce77242d39ad9f9c5ca4aa83, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 32fd08a7ced0c4831a4dc8b738dbd1d0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.9, y: 1.2}
+  m_Size: {x: 1.4, y: 1.4}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &9205984759923988329
+--- !u!1 &7409177476085771124
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,44 +87,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5210759584641842374}
-  - component: {fileID: 7707698385151720048}
+  - component: {fileID: 4196563020628238368}
+  - component: {fileID: 2525097436494371182}
   m_Layer: 0
-  m_Name: MissileLauncher
+  m_Name: Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5210759584641842374
+--- !u!4 &4196563020628238368
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9205984759923988329}
+  m_GameObject: {fileID: 7409177476085771124}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 5191801448020282083}
+  - {fileID: 9119584471938723091}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7707698385151720048
+--- !u!114 &2525097436494371182
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9205984759923988329}
+  m_GameObject: {fileID: 7409177476085771124}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab1e3d60ac518cb4aab85d3c9df6d7f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 5a0fe68f0ce92fc4696f1b9acf4995c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireDelay: 0.5
-  missilePrefab: {fileID: 6594711831054778514, guid: 9f3c3c1a767699e49a3f1826434427dc,
-    type: 3}
-  explosionPrefab: {fileID: 2525097436494371182, guid: 6ed81e61c7855604cb85d9d1f511959e,
-    type: 3}
+  delayTime: 3

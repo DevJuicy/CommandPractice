@@ -12,13 +12,17 @@ namespace JUICY
         bool canFire;
 
         Factory missileFactory;
+        Factory explosionFactory;
 
         [SerializeField]
         RecycleObject missilePrefab;
+        [SerializeField]
+        RecycleObject explosionPrefab;
 
         void Start()
         {
-            missileFactory = new Factory(missilePrefab, 5);
+            missileFactory = new Factory(missilePrefab);
+            explosionFactory = new Factory(explosionPrefab);
         }
 
         void Update()
@@ -49,8 +53,18 @@ namespace JUICY
 
         void OnMissileDestroyed(RecycleObject missile)
         {
+            var obj = explosionFactory.Get();
+            obj.Activate(missile.transform.position);
+            obj.Destroyed += OnExplosionDestryed;
+
             missileFactory.Restore(missile);
             missile.Destroyed -= OnMissileDestroyed;
+        }
+
+        void OnExplosionDestryed(RecycleObject explosion)
+        {
+            explosionFactory.Restore(explosion);
+            explosion.Destroyed -= OnExplosionDestryed;
         }
     }
 }
